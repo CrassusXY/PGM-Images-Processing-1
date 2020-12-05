@@ -66,100 +66,26 @@ int czytaj(FILE *plik_we,int obraz_pgm[][MAX],int *wymx,int *wymy, int *szarosci
   return *wymx**wymy;   /* Czytanie zakonczone sukcesem    */
 }                       /* Zwroc liczbe wczytanych pikseli */
 
-int negatyw(int obraz_pgm[][MAX], int *wymx, int *wymy, int *szarosci) {
+int zapisz(FILE *plik_wy,int obraz_pgm[][MAX],int *wymx, int *wymy, int szarosci) {
   int i, j;
-  for(i=0; i<*wymy; i++){
-    for(j=0; j<*wymx; j++){
-      obraz_pgm[i][j] = szarosci - obraz_pgm [i][j];
+
+  if (plik_wy==NULL){
+    fprintf(stderr,"Blad: Nie podano uchwytu do pliku.\n");
+    return(0);
+  }
+
+  fprintf(plik_wy,"P2\n");
+
+  fprintf(plik_wy,"%d %d %d ",*wymx,*wymy,szarosci);
+
+  for(i=0;i<*wymy;i++){
+    for(j=0;j<*wymx;j++){
+      fprintf(plik_wy,"%d ",obraz_pgm[i][j]);
+      fprintf(plik_wy,"\n");
     }
   }
-}
 
-int progowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
-    int i, j;
-    int wartosc, wybor;
-
-
-    printf("Wybierz opcję progowania:");
-    printf("1 - Progowanie\n 2 - Progowanie czerni\n 3 - Progowanie bieli\n 4 - Powrot do menu\n");
-    scanf("%d",wybor);
-
-    switch(wybor){
-      case 1:
-      printf("Podaj poziom progowania:");
-      scanf("%d",wartosc);
-      if(wartosc>=0&&wartosc<=100){
-        for (i=0; i<*wymy; i++){
-            for (j=0; j<*wymx; j++){
-              if(obraz_pgm[i][j]<=(szarosci*wartosc/100)){
-                obraz_pgm[i][j]=0;
-              }
-              else{
-                obraz_pgm[i][j]=szarosci;
-              }
-            }
-        }
-        return 0;
-      }
-      else{
-        return 0;
-      }
-
-      case 2:
-      printf("Podaj poziom progowania czerni:");
-      scanf("%d",wartosc);
-      if(wartosc>=0&&wartosc<=100){
-        for (i=0; i<*wymy; i++){
-            for (j=0; j<*wymx; j++){
-              if(obraz_pgm[i][j]<=(szarosci*wartosc/100)){
-                obraz_pgm[i][j]=0;
-              }
-              else{
-                obraz_pgm[i][j]=obraz_pgm[i][j];
-              }
-            }
-        }
-        return 0;
-      }
-      else{
-        return 0;
-      }
-
-      case 3:
-      printf("Podaj poziom progowania bieli:");
-      scanf("%d",wartosc);
-      if(wartosc>=0&&wartosc<=100){
-        for (i=0; i<*wymy; i++){
-            for (j=0; j<*wymx; j++){
-              if(obraz_pgm[i][j]<=(szarosci*wartosc/100)){
-                obraz_pgm[i][j]=obraz_pgm[i][j];
-              }
-              else{
-                obraz_pgm[i][j]=szarosci;
-              }
-            }
-        }
-        return 0;
-      }
-      else{
-        return 0;
-      }
-
-      case 4:
-      return 0;
-
-      default:
-      printf("Wybrano niewlasciwa opcje!");
-    }
-}
-
-int konturowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
-  int i, j;
-    for(i=0; i<*wymy; i++){
-      for(j=0; j<*wymx; j++){
-        obraz_pgm[i][j] = (abs(obraz_pgm[i+1][j]-obraz_pgm[i][j])+abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]));
-      }
-    }
+  return 1;
 }
 
 void wyswietl(char *n_pliku) {
@@ -172,18 +98,57 @@ void wyswietl(char *n_pliku) {
   system(polecenie);             /* wykonanie polecenia        */
 }
 
+int negatyw(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
+  int i, j;
+  for(i=0; i<*wymy; i++){
+    for(j=0; j<*wymx; j++){
+      obraz_pgm[i][j] = szarosci - obraz_pgm [i][j];
+    }
+  }
+}
+
+int progowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci, int *wartosc) {
+    int i, j;
+
+      if(*wartosc>=0&&*wartosc<=100){
+        for (i=0; i<*wymy; i++){
+            for (j=0; j<*wymx; j++){
+              if(obraz_pgm[i][j]<=(szarosci**wartosc/100)){
+                obraz_pgm[i][j]=0;
+              }
+              else{
+                obraz_pgm[i][j]=szarosci;
+              }
+            }
+        }
+        return 0;
+      }
+      else{
+        return 0;
+      }
+  }
+
+int konturowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
+  int i, j;
+    for(i=0; i<*wymy; i++){
+      for(j=0; j<*wymx; j++){
+        obraz_pgm[i][j] = (abs(obraz_pgm[i+1][j]-obraz_pgm[i][j])+abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]));
+      }
+    }
+}
+
+
 
 int main() {
   int obraz[MAX][MAX] ;
-  int wymx,wymy,odcieni;
-
+  int wymx,wymy,odcieni,poziom;
   int odczytano = 0;
   FILE *plik;
   char nazwa[100];
 
-  int opcja;
+  int opcja,wybor;
 
-  while (opcja!=0)
+  while (opcja!=8)
   {
   printf("Menu:\n");
   printf("1 - Wczytaj\n");
@@ -193,7 +158,7 @@ int main() {
   printf("5 - Progowanie\n"); 
   printf("6 - Konturowanie\n");
   printf("7 - Rozmycie\n");  
-  printf("0.Zakoncz\n");
+  printf("8 - Zakoncz\n");
   printf("Twój wybór:");
   scanf("%d", &opcja);
 
@@ -206,19 +171,72 @@ int main() {
       if (plik != NULL) {
         odczytano = czytaj(plik,obraz,&wymx,&wymy,&odcieni);
         fclose(plik);
+        printf("Plik odczytany poprawnie\n");
       }
+      else{
+        printf("Plik nie odczytany poprawnie\n");
+      }
+      break;
+
     case 2:
+      if(odczytano != 0){
+        printf("Podaj pod jaka nazwa mam zapisac plik:\n");
+        scanf("%s",nazwa);
+        plik=fopen(nazwa,"w");
+        zapisz(plik,obraz,&wymx,&wymy,odcieni);
+        fclose(plik);
+        printf("Zapisano");
+      }
+      else
+      {
+        printf("Brak pliku do zapisania");
+      }  
+      break;
+
     case 3:
-      if (odczytano != 0)
-      wyswietl(nazwa);
-      return odczytano;
+      if (odczytano != 0){
+        plik=fopen("tmp.pgm","w");
+        zapisz(plik,obraz,&wymx,&wymy,odcieni);
+        fclose(plik);
+        wyswietl("tmp.pgm");
+        printf("Obraz wyswietlony poprawnie");
+      }
+      else{
+        printf("Brak pliku do wyswietlenia");
+      }
+      break;
+
     case 4:
-      negatyw(obraz,&wymx,&wymy,odcieni);
+      if (odczytano != 0){
+        negatyw(obraz,&wymx,&wymy,odcieni);
+        printf("Negatyw wykonany poprawnie");
+      }
+      else{
+        printf("Brak pliku do operacji negatywu");
+      }
+      break;
+
     case 5:
-      progowanie(obraz,&wymx,&wymy,odcieni);
+      if(odczytano != 0){
+        printf("Podaj poziom progowania:\n");
+        scanf("%d",&poziom);
+        progowanie(obraz,&wymx,&wymy,odcieni,&poziom);
+        printf("Progowanei wykonane poprawnie");
+      }
+      else{
+        printf("brak pliku do progowania");
+      }
+      break;
+
     case 6:
-    case 7:
-    case 0:
+      if (odczytano != 0){
+        konturowanie(obraz,&wymx,&wymy,odcieni);
+        printf("Konturowanie wykonane poprawnie");
+      }
+      else{
+        printf("Brak pliku do konturowania");
+      }
+      break;
     }
   }
 }
