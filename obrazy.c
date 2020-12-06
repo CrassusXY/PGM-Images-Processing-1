@@ -100,6 +100,7 @@ void wyswietl(char *n_pliku) {
 
 int negatyw(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
   int i, j;
+
   for(i=0; i<*wymy; i++){
     for(j=0; j<*wymx; j++){
       obraz_pgm[i][j] = szarosci - obraz_pgm [i][j];
@@ -130,6 +131,7 @@ int progowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci, int *wa
 
 int konturowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
   int i, j;
+
     for(i=0; i<*wymy; i++){
       for(j=0; j<*wymx; j++){
         obraz_pgm[i][j] = (abs(obraz_pgm[i+1][j]-obraz_pgm[i][j])+abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]));
@@ -137,16 +139,32 @@ int konturowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
     }
 }
 
+int rozmycie(int obraz_pgm[][MAX], int tablica_pomocnicza[][MAX], int *wymx, int *wymy, int szarosci, int*promien) {
+  int i,j;
 
+  for(i=0; i<*wymy; i++){
+    for(j=0; j<*wymx; j++){
+      tablica_pomocnicza[i][j]=obraz_pgm[i][j];
+    }
+  }
+
+  if(*promien==1){
+    for(i=0; i<*wymy; i++){
+      for(j=0; j<*wymx; j++){
+        obraz_pgm[i][j]=(tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1])/3;
+      }
+    }
+  }
+}
 
 int main() {
   int obraz[MAX][MAX] ;
-  int wymx,wymy,odcieni,poziom;
+  int wymx,wymy,odcieni;
   int odczytano = 0;
   FILE *plik;
   char nazwa[100];
-
-  int opcja,wybor;
+  int opcja,poziom,promien;
+  int tablica[MAX][MAX];
 
   while (opcja!=8)
   {
@@ -185,11 +203,11 @@ int main() {
         plik=fopen(nazwa,"w");
         zapisz(plik,obraz,&wymx,&wymy,odcieni);
         fclose(plik);
-        printf("Zapisano");
+        printf("Zapisano\n");
       }
       else
       {
-        printf("Brak pliku do zapisania");
+        printf("Brak pliku do zapisania\n");
       }  
       break;
 
@@ -199,20 +217,20 @@ int main() {
         zapisz(plik,obraz,&wymx,&wymy,odcieni);
         fclose(plik);
         wyswietl("tmp.pgm");
-        printf("Obraz wyswietlony poprawnie");
+        printf("Obraz wyswietlony poprawnie\n");
       }
       else{
-        printf("Brak pliku do wyswietlenia");
+        printf("Brak pliku do wyswietlenia\n");
       }
       break;
 
     case 4:
       if (odczytano != 0){
         negatyw(obraz,&wymx,&wymy,odcieni);
-        printf("Negatyw wykonany poprawnie");
+        printf("Negatyw wykonany poprawnie\n");
       }
       else{
-        printf("Brak pliku do operacji negatywu");
+        printf("Brak pliku do operacji negatywu\n");
       }
       break;
 
@@ -221,22 +239,38 @@ int main() {
         printf("Podaj poziom progowania:\n");
         scanf("%d",&poziom);
         progowanie(obraz,&wymx,&wymy,odcieni,&poziom);
-        printf("Progowanei wykonane poprawnie");
+        printf("Progowanei wykonane poprawnie\n");
       }
       else{
-        printf("brak pliku do progowania");
+        printf("brak pliku do progowania\n");
       }
       break;
 
     case 6:
       if (odczytano != 0){
         konturowanie(obraz,&wymx,&wymy,odcieni);
-        printf("Konturowanie wykonane poprawnie");
+        printf("Konturowanie wykonane poprawnie\n");
       }
       else{
-        printf("Brak pliku do konturowania");
+        printf("Brak pliku do konturowania\n");
       }
       break;
+
+    case 7:
+      if (odczytano != 0){
+        printf("Podaj promien rozmycia(1 lub 2):\n");
+        scanf("%d",&promien);
+        if(promien == 1 || promien == 2);{
+          rozmycie(obraz,tablica,&wymx,&wymy,odcieni,&promien);
+          printf("Konturowanie wykonane poprawnie\n");
+        }
+        else{
+          printf("Bledny promien\n");
+        }
+      }
+      else{
+        printf("Brak pliku do rozmycia\n");
+      }
     }
   }
 }
