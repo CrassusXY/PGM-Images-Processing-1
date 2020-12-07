@@ -134,7 +134,15 @@ int konturowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
 
     for(i=0; i<*wymy; i++){
       for(j=0; j<*wymx; j++){
-        obraz_pgm[i][j] = (abs(obraz_pgm[i+1][j]-obraz_pgm[i][j])+abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]));
+        if(i+1==*wymy){
+          obraz_pgm[i][j] = abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]);
+        }
+        if(j+1==*wymx){
+          obraz_pgm[i][j] = abs(obraz_pgm[i+1][j]-obraz_pgm[i][j]);
+        }
+        else{
+          obraz_pgm[i][j] = (abs(obraz_pgm[i+1][j]-obraz_pgm[i][j])+abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]));
+        }
       }
     }
 }
@@ -151,7 +159,37 @@ int rozmycie(int obraz_pgm[][MAX], int tablica_pomocnicza[][MAX], int *wymx, int
   if(*promien==1){
     for(i=0; i<*wymy; i++){
       for(j=0; j<*wymx; j++){
-        obraz_pgm[i][j]=(tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1])/3;
+        if(j==0){
+          obraz_pgm[i][j]=(tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1])/2;
+        }
+        if(j+1==*wymx){
+          obraz_pgm[i][j]=(tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j])/2;
+        }
+        else{
+          obraz_pgm[i][j]=(tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1])/3;
+        }
+      }
+    }
+  }
+
+  if(*promien==2){
+    for(i=0; i<*wymy; i++){
+      for(j=0; j<*wymx; j++){
+        if(j==0){
+          obraz_pgm[i][j]=(tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1]+tablica_pomocnicza[i][j+2])/3;
+        }
+        if(j==1){
+          obraz_pgm[i][j]=(tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1]+tablica_pomocnicza[i][j+2])/4;
+        }
+        if(j+1==*wymx){
+          obraz_pgm[i][j]=(tablica_pomocnicza[i][j-2]+tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j])/3;
+        }
+        if(j+2==*wymx){
+          obraz_pgm[i][j]=(tablica_pomocnicza[i][j-2]+tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1])/4;
+        }
+        else{
+          obraz_pgm[i][j]=(tablica_pomocnicza[i][j-2]+tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1]+tablica_pomocnicza[i][j+2])/5;
+        }
       }
     }
   }
