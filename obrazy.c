@@ -66,6 +66,7 @@ int czytaj(FILE *plik_we,int obraz_pgm[][MAX],int *wymx,int *wymy, int *szarosci
   return *wymx**wymy;   /* Czytanie zakonczone sukcesem    */
 }                       /* Zwroc liczbe wczytanych pikseli */
 
+/*Funkcja zapisujaca tabele do pliku PGM*/
 int zapisz(FILE *plik_wy,int obraz_pgm[][MAX],int *wymx, int *wymy, int szarosci) {
   int i, j;
 
@@ -74,20 +75,21 @@ int zapisz(FILE *plik_wy,int obraz_pgm[][MAX],int *wymx, int *wymy, int szarosci
     return(0);
   }
 
-  fprintf(plik_wy,"P2\n");
+  fprintf(plik_wy,"P2\n"); /*Zapisuje migidzne "P2"*/
 
-  fprintf(plik_wy,"%d %d %d ",*wymx,*wymy,szarosci);
+  fprintf(plik_wy,"%d %d %d ",*wymx,*wymy,szarosci); /*Zapisuje parametry obrazu*/
 
   for(i=0;i<*wymy;i++){
     for(j=0;j<*wymx;j++){
-      fprintf(plik_wy,"%d ",obraz_pgm[i][j]);
+      fprintf(plik_wy,"%d ",obraz_pgm[i][j]); /*Wypisuje wartosci tabeli*/
       fprintf(plik_wy,"\n");
     }
   }
 
-  return 1;
+  return 0; /*Zapisz zakonczone sukcesem*/
 }
 
+/*Funkcja wyswietlajaca plik tymczasowy*/
 void wyswietl(char *n_pliku) {
   char polecenie[DL_LINII];      /* bufor pomocniczy do zestawienia polecenia */
 
@@ -98,45 +100,48 @@ void wyswietl(char *n_pliku) {
   system(polecenie);             /* wykonanie polecenia        */
 }
 
+/*Funkcja tworzaca negatyw*/
 int negatyw(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
   int i, j;
 
   for(i=0; i<*wymy; i++){
     for(j=0; j<*wymx; j++){
-      obraz_pgm[i][j] = szarosci - obraz_pgm [i][j];
+      obraz_pgm[i][j] = szarosci - obraz_pgm [i][j]; /*Zmieniam wartosci elementow tablicy na znajdujace sie po przecinwej stronie skali szarosci*/
     }
   }
   return 0;
 }
 
+/*Fukcja wykonujaca progowanie*/
 int progowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci, int *wartosc) {
     int i, j;
 
       for (i=0; i<*wymy; i++){
         for (j=0; j<*wymx; j++){
-          if(obraz_pgm[i][j]<=(szarosci**wartosc/100)){
-            obraz_pgm[i][j]=0;
+          if(obraz_pgm[i][j]<=(szarosci**wartosc/100)){ /*Sprawdzam czy element tabeli jest mniejszy badz rowny od progu*/
+            obraz_pgm[i][j]=0; /*Jesli tak, to przypisuje mu wartosc 0*/
           }
           else{
-            obraz_pgm[i][j]=szarosci;
+            obraz_pgm[i][j]=szarosci; /*Jesli nie, to przypisuje mu maksymalna wartosc szarosci*/
           }
         }
       }
     return 0;
   }
 
+/*Funkjca tworzaca kontur obrazu*/
 int konturowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
   int i, j;
 
   for(i=0; i<*wymy; i++){
     for(j=0; j<*wymx; j++){
-      if(i+1==*wymy){
+      if(i+1==*wymy){ /*Specjalny przypadek zapobiegajacy wczytaniu elementu nienalezacego do tablicy poza wymy*/
         obraz_pgm[i][j] = abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]);
       }
-      if(j+1==*wymx){
+      if(j+1==*wymx){ /*Specjalny przypadek zapobiegajacy wczytaniu elementu nienalezacego do tablicy poza wymx*/
         obraz_pgm[i][j] = abs(obraz_pgm[i+1][j]-obraz_pgm[i][j]);
       }
-      else{
+      else{ /*Pozostale przypadki*/
         obraz_pgm[i][j] = (abs(obraz_pgm[i+1][j]-obraz_pgm[i][j])+abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]));
       }
     }
@@ -144,47 +149,48 @@ int konturowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
   return 0;
 }
 
+/*Funkcja rozmywajaca obraz*/
 int rozmycie(int obraz_pgm[][MAX], int tablica_pomocnicza[][MAX], int *wymx, int *wymy, int szarosci, int*promien) {
   int i,j;
 
   for(i=0; i<*wymy; i++){
-    for(j=0; j<*wymx; j++){
-      tablica_pomocnicza[i][j]=obraz_pgm[i][j];
+    for(j=0; j<*wymx; j++){ 
+      tablica_pomocnicza[i][j]=obraz_pgm[i][j]; /*Przypisuje do elementow tablicy pomocniczej wartosci odpowiadajacych elementow tablicy zawierajacej obraz*/
     }
   }
 
-  if(*promien==1){
+  if(*promien==1){ /*Przypadek, kiedy promien rozmycia wynosi 1*/
     for(i=0; i<*wymy; i++){
       for(j=0; j<*wymx; j++){
-        if(j==0){
+        if(j==0){ /*Przypadek poczatku wiersza, zapobiegajacy pobraniu nieistniejacych wartosci*/
           obraz_pgm[i][j]=(tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1])/2;
         }
-        if(j+1==*wymx){
+        if(j+1==*wymx){ /*Przypadek konca wiersza, zapobiegajacy pobraniu nieistniejacych wartosci*/
           obraz_pgm[i][j]=(tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j])/2;
         }
-        else{
+        else{ /*Normalny przypadek. obliczam srednia z trzech sasiadujacych elementow tablicy pomocniczej i przypisuje ja do tablicy zawierajacej obraz*/
           obraz_pgm[i][j]=(tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1])/3;
         }
       }
     }
   }
 
-  if(*promien==2){
+  if(*promien==2){ /*Przypadek, kiedy promien rozmycia wynosi 2*/
     for(i=0; i<*wymy; i++){
       for(j=0; j<*wymx; j++){
-        if(j==0){
+        if(j==0){ /*Pierwszy przypadek poczatku wiersza, zapobiegajacy pobraniu nieistniejacych wartosci*/
           obraz_pgm[i][j]=(tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1]+tablica_pomocnicza[i][j+2])/3;
         }
-        if(j==1){
+        if(j==1){ /*Drugi przypadek poczatku wiersza, zapobiegajacy pobraniu nieistniejacych wartosci*/
           obraz_pgm[i][j]=(tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1]+tablica_pomocnicza[i][j+2])/4;
         }
-        if(j+1==*wymx){
+        if(j+1==*wymx){ /*Pierwszy przypadek konca wiersza, zapobiegajacy pobraniu nieistniejacych wartosci*/
           obraz_pgm[i][j]=(tablica_pomocnicza[i][j-2]+tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j])/3;
         }
-        if(j+2==*wymx){
+        if(j+2==*wymx){ /*Drugi przypadek konca wiersza, zapobiegajacy pobraniu nieistniejacych wartosci*/
           obraz_pgm[i][j]=(tablica_pomocnicza[i][j-2]+tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1])/4;
         }
-        else{
+        else{ /*Normalny przypadek. obliczam srednia z pieciu sasiadujacych elementow tablicy pomocniczej i przypisuje ja do tablicy zawierajacej obraz*/
           obraz_pgm[i][j]=(tablica_pomocnicza[i][j-2]+tablica_pomocnicza[i][j-1]+tablica_pomocnicza[i][j]+tablica_pomocnicza[i][j+1]+tablica_pomocnicza[i][j+2])/5;
         }
       }
@@ -194,15 +200,17 @@ int rozmycie(int obraz_pgm[][MAX], int tablica_pomocnicza[][MAX], int *wymx, int
 }
 
 int main() {
-  int obraz[MAX][MAX] ;
-  int wymx,wymy,odcieni;
-  int odczytano = 0;
+  int obraz[MAX][MAX]; /*Tablica do ktorej zostanie wczytany obraz*/
+  int wymx,wymy,odcieni; /*Paremetry obrazu. Jego wymiary i skala szarosci*/
+  int odczytano = 0; /*int pomagajacy w sprawdzeniu, czy wczytano poprawnie obraz do tablicy*/
   FILE *plik;
-  char nazwa[100];
-  int opcja,poziom,promien;
-  int tablica[MAX][MAX];
+  char nazwa[100]; /*char pomagajacy przy operacji zapisywania i wczytywania*/
+  int opcja; /*int uzywany przy wyborze opcji w menu*/
+  int poziom; /*int z poziomem w operacji progowania*/
+  int promien; /*int z promieniem w operacji rozmycia*/
+  int tablica[MAX][MAX]; /*Tablica pomocnicza przy operacji rozmywania*/
 
-  while (opcja!=8)
+  while (opcja!=8) /*Menu*/
   {
   printf("    Menu:\n");
   printf("1 - Wczytaj\n");
@@ -219,127 +227,135 @@ int main() {
 
   switch (opcja)
     {
-    case 1:
+    case 1: /*Opcja wywolujaca wczytania pliku*/
       printf("Podaj nazwe pliku:\n");
-      scanf("%s",nazwa);
-      plik=fopen(nazwa,"r");
-      if (plik != NULL) {
-        odczytano = czytaj(plik,obraz,&wymx,&wymy,&odcieni);
-        fclose(plik);
-        system("clear");
+      scanf("%s",nazwa); /*Pobieram nazwe pliku do wczytania*/
+      plik=fopen(nazwa,"r"); /*Otwieram ten plik w trybie do czytania*/
+      if (plik != NULL) { /*Sprawdzam, czy plik jest prawidlowy*/
+        odczytano = czytaj(plik,obraz,&wymx,&wymy,&odcieni); /*Wywoluje funkcje czytaj oraz przypisuje jej wynik, do odczytano*/
+        fclose(plik); /*Zamykam plik*/
+        system("clear"); /*Czyszczenie*/
         printf("Plik odczytany poprawnie\n\n");
       }
-      else{
-        system("clear");
+      else{ /*Sytuacja, gdy plik nie jest poprawny*/
+        system("clear"); 
         printf("Plik nie odczytany poprawnie\n\n");
       }
       break;
 
     case 2:
-      if(odczytano != 0){
-        printf("Podaj pod jaka nazwa mam zapisac plik:\n");
-        scanf("%s",nazwa);
-        plik=fopen(nazwa,"w");
-        zapisz(plik,obraz,&wymx,&wymy,odcieni);
-        fclose(plik);
+      if(odczytano != 0){ /*Sprawdzam, czy jest wczytany plik*/
+        printf("Podaj pod jaka nazwa mam zapisac plik:\n"); /*Sytacja, gdy plik jest wczytany*/
+        scanf("%s",nazwa); /*Wczytuje nazwe pod jaka zapisac plik*/
+        plik=fopen(nazwa,"w"); /*Otwieram plik do trybie zapisu*/
+        zapisz(plik,obraz,&wymx,&wymy,odcieni); /*Wywoluje funkcje zapisz*/
+        fclose(plik); /*Zamykam plik*/
         system("clear");
         printf("Zapisano\n\n");
       }
       else
       {
-        system("clear");
+        system("clear"); /*Sytacja, gdy plik nie jest wczytany*/
         printf("Brak pliku do zapisania\n\n");
       }  
       break;
 
     case 3:
-      if (odczytano != 0){
-        plik=fopen("tmp.pgm","w");
-        zapisz(plik,obraz,&wymx,&wymy,odcieni);
-        fclose(plik);
-        wyswietl("tmp.pgm");
+      if (odczytano != 0){ /*Sprawdzam, czy jest wczytany plik*/
+        plik=fopen("tmp.pgm","w"); /*Otwieram plik tymczasowy do zapisu*/
+        zapisz(plik,obraz,&wymx,&wymy,odcieni); /*Zapisuje go*/
+        fclose(plik); /*zamykam go*/
+        wyswietl("tmp.pgm"); /*Wywoluje funcje zapisz*/
         system("clear");
         printf("Obraz wyswietlony poprawnie\n\n");
       }
-      else{
+      else{ /*Sytuacja, gdy plik nie jest wczytany*/
         system("clear");
         printf("Brak pliku do wyswietlenia\n\n");
       }
       break;
 
     case 4:
-      if (odczytano != 0){
+      if (odczytano != 0){ /*Sprawdzam, czy jest wczytany plik*/
         negatyw(obraz,&wymx,&wymy,odcieni);
         system("clear");
         printf("Negatyw wykonany poprawnie\n\n");
       }
-      else{
+      else{ /*Sytuacja, gdy plik nie jest wczytany*/
         system("clear");
         printf("Brak pliku do operacji negatywu\n\n");
       }
       break;
 
     case 5:
-      if(odczytano != 0){
+      if(odczytano != 0){ /*Sprawdzam, czy jest wczytany plik*/
         printf("Podaj poziom progowania: ");
-        scanf("%d",&poziom);
-        if(poziom>=0||poziom<=100){
-        progowanie(obraz,&wymx,&wymy,odcieni,&poziom);
+        scanf("%d",&poziom); /*Wczytuje poziom od jakiego ma byc progowanie*/
+        if(poziom>=0||poziom<=100){ /*Sprawdzam, czy poziom progowania jest poprawny*/
+        progowanie(obraz,&wymx,&wymy,odcieni,&poziom); /*Wywoluje operacje progowania*/
         system("clear");
         printf("Progowanie wykonane poprawnie\n\n");
         }
-        else{
+        else{ /*Sytuacja, gdy uzytkownik podal niewlasciwy poziom progowania*/
           system("clear");
           printf("Bledny poziom progowania.\n\n");
         }
       }
-      else{
+      else{ /*Sytuacja, gdy plik nie jest wczytany*/
         system("clear");
         printf("Brak pliku do progowania\n\n");
       }
       break;
 
     case 6:
-      if (odczytano != 0){
-        konturowanie(obraz,&wymx,&wymy,odcieni);
+      if (odczytano != 0){ /*Sprawdzam, czy jest wczytany plik*/
+        konturowanie(obraz,&wymx,&wymy,odcieni); /*Wywoluje operacje konturowania*/
         system("clear");
         printf("Konturowanie wykonane poprawnie\n\n");
       }
-      else{
+      else{ /*Sytuacja, gdy plik nie jest wczytany*/
         system("clear");
         printf("Brak pliku do konturowania\n\n");
       }
       break;
 
     case 7:
-      if (odczytano != 0){
+      if (odczytano != 0){ /*Sprawdzam, czy jest wczytany plik*/
         printf("Podaj promien rozmycia(1 lub 2): ");
-        scanf("%d",&promien);
-        if(promien == 1 || promien == 2){
-          rozmycie(obraz,tablica,&wymx,&wymy,odcieni,&promien);
+        scanf("%d",&promien); /*Wczytuje promien rozmycia*/
+        if(promien == 1 || promien == 2){ /*Sprawdzam promien rozmycia*/
+          rozmycie(obraz,tablica,&wymx,&wymy,odcieni,&promien); /*Wywoluje operacje rozmycia*/
           system("clear");
           printf("Konturowanie wykonane poprawnie\n\n");
         }
-        else{
+        else{ /*Sytaucja. gdy uzytkownik podal bledny promien*/
           system("clear");
           printf("Bledny promien\n\n");
         }
       }
-      else{
+      else{ /*Sytuacja, gdy plik nie jest wczytany*/
         system("clear");
         printf("Brak pliku do rozmycia\n\n");
       }
       break;
 
-    case 8:
+    case 8: /*Opcja konczaca dzialanie programu*/
       system("clear");
       printf ("Program zakonczyl dzialanie\n\n");
       break;
     
-    default:
-      system("clear");
+    default: /*Ostrzezenie o wybraniu opcji spoza zdefiniowanej w menu*/
+      system("clear"); 
       printf("Nie ma takiej pozycji w menu\n\n");
       break;
     }
   }
 }
+
+
+/*Lukasz Walczak 259278
+
+
+
+
+*/
