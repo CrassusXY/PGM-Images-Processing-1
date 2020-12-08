@@ -106,45 +106,42 @@ int negatyw(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
       obraz_pgm[i][j] = szarosci - obraz_pgm [i][j];
     }
   }
+  return 0;
 }
 
 int progowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci, int *wartosc) {
     int i, j;
 
-      if(*wartosc>=0&&*wartosc<=100){
-        for (i=0; i<*wymy; i++){
-            for (j=0; j<*wymx; j++){
-              if(obraz_pgm[i][j]<=(szarosci**wartosc/100)){
-                obraz_pgm[i][j]=0;
-              }
-              else{
-                obraz_pgm[i][j]=szarosci;
-              }
-            }
+      for (i=0; i<*wymy; i++){
+        for (j=0; j<*wymx; j++){
+          if(obraz_pgm[i][j]<=(szarosci**wartosc/100)){
+            obraz_pgm[i][j]=0;
+          }
+          else{
+            obraz_pgm[i][j]=szarosci;
+          }
         }
-        return 0;
       }
-      else{
-        return 0;
-      }
+    return 0;
   }
 
 int konturowanie(int obraz_pgm[][MAX], int *wymx, int *wymy, int szarosci) {
   int i, j;
 
-    for(i=0; i<*wymy; i++){
-      for(j=0; j<*wymx; j++){
-        if(i+1==*wymy){
-          obraz_pgm[i][j] = abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]);
-        }
-        if(j+1==*wymx){
-          obraz_pgm[i][j] = abs(obraz_pgm[i+1][j]-obraz_pgm[i][j]);
-        }
-        else{
-          obraz_pgm[i][j] = (abs(obraz_pgm[i+1][j]-obraz_pgm[i][j])+abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]));
-        }
+  for(i=0; i<*wymy; i++){
+    for(j=0; j<*wymx; j++){
+      if(i+1==*wymy){
+        obraz_pgm[i][j] = abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]);
+      }
+      if(j+1==*wymx){
+        obraz_pgm[i][j] = abs(obraz_pgm[i+1][j]-obraz_pgm[i][j]);
+      }
+      else{
+        obraz_pgm[i][j] = (abs(obraz_pgm[i+1][j]-obraz_pgm[i][j])+abs(obraz_pgm[i][j+1]-obraz_pgm[i][j]));
       }
     }
+  }
+  return 0;
 }
 
 int rozmycie(int obraz_pgm[][MAX], int tablica_pomocnicza[][MAX], int *wymx, int *wymy, int szarosci, int*promien) {
@@ -193,6 +190,7 @@ int rozmycie(int obraz_pgm[][MAX], int tablica_pomocnicza[][MAX], int *wymx, int
       }
     }
   }
+  return 0;
 }
 
 int main() {
@@ -206,7 +204,7 @@ int main() {
 
   while (opcja!=8)
   {
-  printf("Menu:\n");
+  printf("    Menu:\n");
   printf("1 - Wczytaj\n");
   printf("2 - Zapisz\n");
   printf("3 - Wyswietl\n");
@@ -215,8 +213,9 @@ int main() {
   printf("6 - Konturowanie\n");
   printf("7 - Rozmycie\n");  
   printf("8 - Zakoncz\n");
-  printf("Twój wybór:");
+  printf("\nTwój wybór:");
   scanf("%d", &opcja);
+  printf("\n");
 
   switch (opcja)
     {
@@ -227,10 +226,12 @@ int main() {
       if (plik != NULL) {
         odczytano = czytaj(plik,obraz,&wymx,&wymy,&odcieni);
         fclose(plik);
-        printf("Plik odczytany poprawnie\n");
+        system("clear");
+        printf("Plik odczytany poprawnie\n\n");
       }
       else{
-        printf("Plik nie odczytany poprawnie\n");
+        system("clear");
+        printf("Plik nie odczytany poprawnie\n\n");
       }
       break;
 
@@ -241,11 +242,13 @@ int main() {
         plik=fopen(nazwa,"w");
         zapisz(plik,obraz,&wymx,&wymy,odcieni);
         fclose(plik);
-        printf("Zapisano\n");
+        system("clear");
+        printf("Zapisano\n\n");
       }
       else
       {
-        printf("Brak pliku do zapisania\n");
+        system("clear");
+        printf("Brak pliku do zapisania\n\n");
       }  
       break;
 
@@ -255,60 +258,88 @@ int main() {
         zapisz(plik,obraz,&wymx,&wymy,odcieni);
         fclose(plik);
         wyswietl("tmp.pgm");
-        printf("Obraz wyswietlony poprawnie\n");
+        system("clear");
+        printf("Obraz wyswietlony poprawnie\n\n");
       }
       else{
-        printf("Brak pliku do wyswietlenia\n");
+        system("clear");
+        printf("Brak pliku do wyswietlenia\n\n");
       }
       break;
 
     case 4:
       if (odczytano != 0){
         negatyw(obraz,&wymx,&wymy,odcieni);
-        printf("Negatyw wykonany poprawnie\n");
+        system("clear");
+        printf("Negatyw wykonany poprawnie\n\n");
       }
       else{
-        printf("Brak pliku do operacji negatywu\n");
+        system("clear");
+        printf("Brak pliku do operacji negatywu\n\n");
       }
       break;
 
     case 5:
       if(odczytano != 0){
-        printf("Podaj poziom progowania:\n");
+        printf("Podaj poziom progowania: ");
         scanf("%d",&poziom);
+        if(poziom>=0||poziom<=100){
         progowanie(obraz,&wymx,&wymy,odcieni,&poziom);
-        printf("Progowanei wykonane poprawnie\n");
+        system("clear");
+        printf("Progowanie wykonane poprawnie\n\n");
+        }
+        else{
+          system("clear");
+          printf("Bledny poziom progowania.\n\n");
+        }
       }
       else{
-        printf("brak pliku do progowania\n");
+        system("clear");
+        printf("Brak pliku do progowania\n\n");
       }
       break;
 
     case 6:
       if (odczytano != 0){
         konturowanie(obraz,&wymx,&wymy,odcieni);
-        printf("Konturowanie wykonane poprawnie\n");
+        system("clear");
+        printf("Konturowanie wykonane poprawnie\n\n");
       }
       else{
-        printf("Brak pliku do konturowania\n");
+        system("clear");
+        printf("Brak pliku do konturowania\n\n");
       }
       break;
 
     case 7:
       if (odczytano != 0){
-        printf("Podaj promien rozmycia(1 lub 2):\n");
+        printf("Podaj promien rozmycia(1 lub 2): ");
         scanf("%d",&promien);
-        if(promien == 1 || promien == 2);{
+        if(promien == 1 || promien == 2){
           rozmycie(obraz,tablica,&wymx,&wymy,odcieni,&promien);
-          printf("Konturowanie wykonane poprawnie\n");
+          system("clear");
+          printf("Konturowanie wykonane poprawnie\n\n");
         }
         else{
-          printf("Bledny promien\n");
+          system("clear");
+          printf("Bledny promien\n\n");
         }
       }
       else{
-        printf("Brak pliku do rozmycia\n");
+        system("clear");
+        printf("Brak pliku do rozmycia\n\n");
       }
+      break;
+
+    case 8:
+      system("clear");
+      printf ("Program zakonczyl dzialanie\n\n");
+      break;
+    
+    default:
+      system("clear");
+      printf("Nie ma takiej pozycji w menu\n\n");
+      break;
     }
   }
 }
