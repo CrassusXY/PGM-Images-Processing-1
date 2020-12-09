@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<math.h>
 
-#define MAX 2048            /* Maksymalny rozmiar wczytywanego obrazu */
+#define MAX 999           /* Maksymalny rozmiar wczytywanego obrazu */
 #define DL_LINII 1024      /* Dlugosc buforow pomocniczych */
 
 /************************************************************************************
@@ -87,6 +87,10 @@ int zapisz(FILE *plik_wy,int obraz_pgm[][MAX],int *wymx, int *wymy, int szarosci
   }
 
   return 0; /*Zapisz zakonczone sukcesem*/
+}
+
+void czysc(){
+  system("clear");
 }
 
 /*Funkcja wyswietlajaca plik tymczasowy*/
@@ -234,11 +238,11 @@ int main() {
       if (plik != NULL) { /*Sprawdzam, czy plik jest prawidlowy*/
         odczytano = czytaj(plik,obraz,&wymx,&wymy,&odcieni); /*Wywoluje funkcje czytaj oraz przypisuje jej wynik, do odczytano*/
         fclose(plik); /*Zamykam plik*/
-        system("clear"); /*Czyszczenie*/
+        czysc(); /*Czyszczenie*/
         printf("Plik odczytany poprawnie\n\n");
       }
       else{ /*Sytuacja, gdy plik nie jest poprawny*/
-        system("clear"); 
+        czysc(); 
         printf("Plik nie odczytany poprawnie\n\n");
       }
       break;
@@ -250,12 +254,12 @@ int main() {
         plik=fopen(nazwa,"w"); /*Otwieram plik do trybie zapisu*/
         zapisz(plik,obraz,&wymx,&wymy,odcieni); /*Wywoluje funkcje zapisz*/
         fclose(plik); /*Zamykam plik*/
-        system("clear");
+        czysc();
         printf("Zapisano\n\n");
       }
       else
       {
-        system("clear"); /*Sytacja, gdy plik nie jest wczytany*/
+        czysc(); /*Sytacja, gdy plik nie jest wczytany*/
         printf("Brak pliku do zapisania\n\n");
       }  
       break;
@@ -266,11 +270,11 @@ int main() {
         zapisz(plik,obraz,&wymx,&wymy,odcieni); /*Zapisuje go*/
         fclose(plik); /*zamykam go*/
         wyswietl("tmp.pgm"); /*Wywoluje funcje zapisz*/
-        system("clear");
+        czysc();
         printf("Obraz wyswietlony poprawnie\n\n");
       }
       else{ /*Sytuacja, gdy plik nie jest wczytany*/
-        system("clear");
+        czysc();
         printf("Brak pliku do wyswietlenia\n\n");
       }
       break;
@@ -278,11 +282,11 @@ int main() {
     case 4:
       if (odczytano != 0){ /*Sprawdzam, czy jest wczytany plik*/
         negatyw(obraz,&wymx,&wymy,odcieni);
-        system("clear");
+        czysc();
         printf("Negatyw wykonany poprawnie\n\n");
       }
       else{ /*Sytuacja, gdy plik nie jest wczytany*/
-        system("clear");
+        czysc();
         printf("Brak pliku do operacji negatywu\n\n");
       }
       break;
@@ -293,16 +297,16 @@ int main() {
         scanf("%d",&poziom); /*Wczytuje poziom od jakiego ma byc progowanie*/
         if(poziom>=0||poziom<=100){ /*Sprawdzam, czy poziom progowania jest poprawny*/
         progowanie(obraz,&wymx,&wymy,odcieni,&poziom); /*Wywoluje operacje progowania*/
-        system("clear");
+        czysc();
         printf("Progowanie wykonane poprawnie\n\n");
         }
         else{ /*Sytuacja, gdy uzytkownik podal niewlasciwy poziom progowania*/
-          system("clear");
+          czysc();
           printf("Bledny poziom progowania.\n\n");
         }
       }
       else{ /*Sytuacja, gdy plik nie jest wczytany*/
-        system("clear");
+        czysc();
         printf("Brak pliku do progowania\n\n");
       }
       break;
@@ -310,11 +314,11 @@ int main() {
     case 6:
       if (odczytano != 0){ /*Sprawdzam, czy jest wczytany plik*/
         konturowanie(obraz,&wymx,&wymy,odcieni); /*Wywoluje operacje konturowania*/
-        system("clear");
+        czysc();
         printf("Konturowanie wykonane poprawnie\n\n");
       }
       else{ /*Sytuacja, gdy plik nie jest wczytany*/
-        system("clear");
+        czysc();
         printf("Brak pliku do konturowania\n\n");
       }
       break;
@@ -325,27 +329,27 @@ int main() {
         scanf("%d",&promien); /*Wczytuje promien rozmycia*/
         if(promien == 1 || promien == 2){ /*Sprawdzam promien rozmycia*/
           rozmycie(obraz,tablica,&wymx,&wymy,odcieni,&promien); /*Wywoluje operacje rozmycia*/
-          system("clear");
+          czysc();
           printf("Konturowanie wykonane poprawnie\n\n");
         }
         else{ /*Sytaucja. gdy uzytkownik podal bledny promien*/
-          system("clear");
+          czysc();
           printf("Bledny promien\n\n");
         }
       }
       else{ /*Sytuacja, gdy plik nie jest wczytany*/
-        system("clear");
+        czysc();
         printf("Brak pliku do rozmycia\n\n");
       }
       break;
 
     case 8: /*Opcja konczaca dzialanie programu*/
-      system("clear");
+      czysc();
       printf ("Program zakonczyl dzialanie\n\n");
       break;
     
     default: /*Ostrzezenie o wybraniu opcji spoza zdefiniowanej w menu*/
-      system("clear"); 
+      czysc(); 
       printf("Nie ma takiej pozycji w menu\n\n");
       break;
     }
