@@ -89,6 +89,7 @@ int zapisz(FILE *plik_wy,int obraz_pgm[][MAX],int *wymx, int *wymy, int szarosci
   return 0; /*Zapisz zakonczone sukcesem*/
 }
 
+/*Funkcja czysczaca*/
 void czysc(){
   system("clear");
 }
@@ -359,7 +360,50 @@ int main() {
 
 /*Lukasz Walczak 259278
 
+Program byl testowany na dwoch plikach kubus.pgm oraz na pliku Lena2.pgm. Do testow uzylem komputera lokalnego oraz Diablo.
+
+Kazda funkcjie z przedzialu 2-7 przetestowalem w sytuacji, gdy nie mam wczytanego pliku. Kazdorazowo wynik byl pozytywny.
 
 
+Prosty opis funkcji i ich testow:
+
+1. Funckja wczytaj. 
+Funkcja wczytuje podany przez uzytkownika plik pgm i zapisuje go do tablicy.
+Podczas testow sprawdzilem przypadek, pliku ktory mial bledny parametry. Funkcja zwrocila blad. Natomiast po podaniu poprawnego pliku program podal, ze wczytywanie poprawne.
+
+
+2. Funkcja zapisz.
+Funckja zapisuje dane zapisane w tablicy oraz parametry funkcji do pliku wyjsciowego o nazwie wybranej przez uzytkownika.
+Podczas testow sprawdzilem co sie stanie, jesli sprobuje zapisac bez wczesniejszego wczytania obrazu. Program zwrocil komunikat, o braku wczytanego obrazu.
+W przypadku kiedy mamy wczytany obraz, funkcja dziala prawidlowo, zarowno gdy zapisuje bezposrednio po wczytaniu, jak i jesli chce zapisac przetworzony obraz.
+
+
+3. Funkcja wyswietl.
+Funkcja zapisuje obraz(o ile jest wczytany) jako plik tymczasowy. nastepnie przy uzyciu komendy display wyswietla ten obraz.
+W przypadku kiedy mamy wczytany obraz, funkcja dziala prawidlowo, zarowno gdy wyswietlam bezposrednio po wczytaniu, jak i jesli chce wyswietlic przetworzony obraz.
+
+
+4. Funkcja negatyw.
+Funkcja zamienia stopnie szarosci na przeciwne poprzez odjecie od maksymalenego stopnia szarosci aktualnej wartosci elementu tablicy.
+Funkcja po testach na obu obrazach dala wyniki spodziewane z dokumentow pomocniczych kursu.
+
+
+5. Funkcja progowania.
+Funkcja przypisuje skrajne odcienie szarosci do kazdego elementu tabeli w zaleznosci, czy wczesniej byl on wiekszy, czy mniejszy od progu wybranego uzytkownika.
+Testujac sprawdzilem co sie stanie jesli prog bedzie wiekszy od 100 lub mniejszy od 0. Program ostrzegl o blednym progu i nie wykonal progowania.
+W przypadku poprawnego progu funkcja zwraca obraz zgodny z tym z dokumentow kursu.
+
+
+6. Funkcja konturowania.
+Funkcja wyroznia elementy odrozniajace sie od otoczenia. Po poczatkowych testach, okazalo sie ze funkcja zwraca niektore wyniki wieksze od maksymalnej szarosci.
+Aby to poprawic dodalem podzielilem wszystkie elementy przez dwa. Po tej korekcie funkcja daje oczekiwane wyniki.
+
+
+7. Funkcja rozmycia.
+Funkcja oblicz srednia szarosc dla trzech/pieciu elementow sasiadujacych w poziomie i przypisuje ja do srodkowego. Wyjatek nastepuje, kiedy funkcja dochodzi do krawedzi tabeli.
+Testujac sprawdzilem, czy funkcja poprawnie wczytuje i sprawdza poprawnosc promienia. Dla dobrych promieni, funkcja dziala wlasciwie.
+
+Kazda funkcja tworzy obraz takie jak w danych kursu, co zostalo sprawdzone na pliku kubus.pgm. Przy uzyciu Lena2.pgm wyniki rowniez sa zgodne z oczekiwaniami. 
+Ostatnim testem bylo mieszanie roznych funkcji lub wykonywanie wielokrotnie tej samej funkcji. Wyniki kazdego z testow byly zgodne z oczekiwaniami, wiec program dziala poprawnie.
 
 */
